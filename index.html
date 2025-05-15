@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Otizimli Quiz</title>
+  <style>
+    /* Arka plan animasyonu */
+    @keyframes backgroundShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      padding: 30px;
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(270deg, #89f7fe, #66a6ff, #89f7fe, #66a6ff);
+      background-size: 800% 800%;
+      animation: backgroundShift 20s ease infinite;
+      text-align: center;
+      color: #333;
+    }
+
+    h1 {
+      margin-bottom: 40px;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+    }
+
+    .soru-kutusu {
+      max-width: 600px;
+      margin: 20px auto;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .soru-kutusu.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .soru {
+      font-size: 22px;
+      margin-bottom: 20px;
+      font-weight: 600;
+      color: #222;
+    }
+
+    .secenek {
+      display: block;
+      padding: 14px 20px;
+      margin: 12px 0;
+      background: #e0e0e0;
+      border-radius: 12px;
+      cursor: pointer;
+      user-select: none;
+      font-size: 18px;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .secenek:hover {
+      background-color: #cbdffd;
+      transform: scale(1.05);
+    }
+
+    .secenek.secildi {
+      background-color: #4a90e2;
+      color: white;
+      font-weight: bold;
+      box-shadow: 0 0 12px #4a90e2;
+    }
+
+    .secenek.dogru {
+      background-color: #28a745 !important;
+      color: white;
+      box-shadow: 0 0 15px #28a745;
+    }
+
+    .secenek.yanlis {
+      background-color: #dc3545 !important;
+      color: white;
+      box-shadow: 0 0 15px #dc3545;
+    }
+
+    button {
+      padding: 14px 28px;
+      font-size: 18px;
+      margin-top: 40px;
+      background-color: #007acc;
+      color: white;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      box-shadow: 0 5px 12px rgba(0, 122, 204, 0.5);
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #005f99;
+      transform: scale(1.05);
+    }
+
+    #sonuc {
+      font-size: 24px;
+      font-weight: 700;
+      margin-top: 40px;
+      color: #222;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+      min-height: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Otizimli Quiz</h1>
+
+  <div class="soru-kutusu" data-dogru="B">
+    <div class="soru">1. İnceden ibnelik mevcut mu?</div>
+    <div class="secenek">A) Galiba</div>
+    <div class="secenek">B) Kıps ;)</div>
+    <div class="secenek">C) Öyle hissetiğim oluyor</div>
+    <div class="secenek">D) Hayır</div>
+  </div>
+
+  <div class="soru-kutusu" data-dogru="C">
+    <div class="soru">2. Okey oynayamadığın zaman neler yapmalısın?</div>
+    <div class="secenek">A) Kitap okumalıyım</div>
+    <div class="secenek">B) Kendimi geliştirecek işler bulmalıyım</div>
+    <div class="secenek">C) Çay+31 şekli</div>
+    <div class="secenek">D) Film/Dizi izlemek</div>
+  </div>
+
+  <div class="soru-kutusu" data-dogru="A">
+    <div class="soru">3. Otizimli olduğunu düşünüyor musun?</div>
+    <div class="secenek">A) Browstars annem</div>
+    <div class="secenek">B) Sanmıyorum</div>
+    <div class="secenek">C) Bazen</div>
+    <div class="secenek">D) Hayır</div>
+  </div>
+
+  <div class="soru-kutusu" data-dogru="D">
+    <div class="soru">4. Nelerden hoşlanılır?</div>
+    <div class="secenek">A) Hayvanlar()</div>
+    <div class="secenek">B) Erkekler</div>
+    <div class="secenek">C) Kızlar</div>
+    <div class="secenek">D) El ense</div>
+  </div>
+
+  <div class="soru-kutusu" data-dogru="D">
+    <div class="soru">5. Kaç yaşındaki kızlardan hoşlanılmalı?</div>
+    <div class="secenek">A) 18-22 </div>
+    <div class="secenek">B) 22-25</div>
+    <div class="secenek">C) 25-30</div>
+    <div class="secenek">D) Emirin babaannesinden</div>
+  </div>
+
+  <button id="sonucBtn">Sonucu Göster</button>
+
+  <div id="sonuc"></div>
+
+  <script>
+    // Sayfa açılırken soruları görünür yap (fade ve yukarı kaydırma animasyonu)
+    window.addEventListener('load', () => {
+      const kutular = document.querySelectorAll('.soru-kutusu');
+      kutular.forEach((kutu, i) => {
+        setTimeout(() => {
+          kutu.classList.add('visible');
+        }, i * 150);
+      });
+    });
+
+    // Seçenek tıklama
+    document.querySelectorAll('.soru-kutusu').forEach(soruKutu => {
+      soruKutu.querySelectorAll('.secenek').forEach(secenek => {
+        secenek.addEventListener('click', () => {
+          // Aynı sorunun diğer seçeneklerinden secildi sınıfını kaldır
+          soruKutu.querySelectorAll('.secenek').forEach(s => {
+            s.classList.remove('secildi', 'dogru', 'yanlis');
+          });
+          // Tıklanan seçeneği işaretle
+          secenek.classList.add('secildi');
+        });
+      });
+    });
+
+    // Sonuç butonuna basınca doğru-yanlış kontrolü
+    document.getElementById('sonucBtn').addEventListener('click', () => {
+      const kutular = document.querySelectorAll('.soru-kutusu');
+      let dogruSayisi = 0;
+      let yanlisSayisi = 0;
+
+      kutular.forEach(kutu => {
+        const dogru = kutu.getAttribute('data-dogru');
+        const secilen = kutu.querySelector('.secenek.secildi');
+
+        kutu.querySelectorAll('.secenek').forEach(sec => {
+          sec.classList.remove('dogru', 'yanlis');
+        });
+
+        if (secilen) {
+          const secilenHarf = secilen.textContent.trim().charAt(0);
+          if (secilenHarf === dogru) {
+            dogruSayisi++;
+            secilen.classList.add('dogru');
+          } else {
+            yanlisSayisi++;
+            secilen.classList.add('yanlis');
+            // Doğru cevabı da göster
+            kutu.querySelectorAll('.secenek').forEach(sec => {
+              if (sec.textContent.trim().charAt(0) === dogru) {
+                sec.classList.add('dogru');
+              }
+            });
+          }
+        } else {
+          yanlisSayisi++;
+          // Doğru cevabı göster
+          kutu.querySelectorAll('.secenek').forEach(sec => {
+            if (sec.textContent.trim().charAt(0) === dogru) {
+              sec.classList.add('dogru');
+            }
+          });
+        }
+      });
+
+      let mesaj = '';
+      if (dogruSayisi > yanlisSayisi) {
+        mesaj = "🎉 Tebrikler! Otizimli olmuşsun.";
+      } else {
+        mesaj = "İbnelik var gibi";
+      }
+
+      document.getElementById('sonuc').textContent = `Doğru: ${dogruSayisi} / Yanlış: ${yanlisSayisi} — ${mesaj}`;
+    });
+  </script>
+
+</body>
+</html>
